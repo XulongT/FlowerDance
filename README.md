@@ -3,7 +3,7 @@
 Code for paper  
 **"FlowerDance: MeanFlow for Efficient and Refined 3D Dance Generation"**
 
-[[Paper]](https://arxiv.org/abs/2511.21029)
+[[Paper]](https://arxiv.org/abs/2511.21029) | [[Project Page]](https://flowerdance25.github.io/)
 
 ---
 
