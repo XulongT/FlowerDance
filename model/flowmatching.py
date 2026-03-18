@@ -72,7 +72,7 @@ class FlowMatching(nn.Module):
         e = torch.randn_like(x0)
         w = 1
 
-
+        # --- Step 1: sample  ---
         t, r = self.sample_two_timesteps(b, device)
         x_t = (1 - t) * x0 + t * e
         v = e - x0
@@ -95,18 +95,19 @@ class FlowMatching(nn.Module):
         # adp_wt = (fm_loss.detach() + 1e-3) ** 0.75
         fm_loss = fm_loss / ((fm_loss.detach() + 1e-3) ** 0.75)
 
+        # --- Step 2: r=0  ---
         r1 = torch.zeros_like(t)
-        t1 = torch.rand((b, 1, 1), device=x0.device)  
+        t1 = torch.rand((b, 1, 1), device=x0.device)  # t > 0
         e = torch.randn_like(x0)
 
-
+        #  x_t
         x_t = (1 - t1) * x0 + t1 * e
 
-
+        #  u
         u = self.model(x_t, cond, genre, t1.view(-1), t1.view(-1))
 
-
-        model_out = x_t - t1 * u 
+        #  x0
+        model_out = x_t - t1 * u   
         target = x0
 
         # full reconstruction loss
@@ -165,11 +166,11 @@ class FlowMatching(nn.Module):
         return self.fm_losses(x, cond, genre)
 
 
-
+    # === sample ===
     @torch.no_grad()
     def euler_sample(self, shape, cond, genre, n_steps=21):
         b, device = shape[0], cond.device
-        x = torch.randn(shape, device=device) 
+        x = torch.randn(shape, device=device)  
 
         t_values = torch.linspace(1, 0, n_steps, device=device)
         dt = 1.0 / (n_steps - 1)  
@@ -188,10 +189,11 @@ class FlowMatching(nn.Module):
         end = time.perf_counter()
         print(f"Time: {(end - start):.2f} s")
 
-
+        # unnormalize 
         samples = normalizer.unnormalize(samples)
         sample_contact, samples = torch.split(samples, (4, samples.shape[2] - 4), dim=2)
 
+        # FK 
         b, s, c = samples.shape
         pos = samples[:, :, :3].to(cond.device)
         q = samples[:, :, 3:].reshape(b, s, 24, 6)
@@ -199,6 +201,7 @@ class FlowMatching(nn.Module):
 
         poses = self.smpl.forward(q, pos).detach().cpu().numpy()
         sample_contact = sample_contact.detach().cpu().numpy() if sample_contact is not None else None
+
 
         Path(fk_out).mkdir(parents=True, exist_ok=True)
         for num, (qq, pos_, filename, pose) in enumerate(zip(q, pos, name, poses)):
@@ -213,28 +216,34 @@ class FlowMatching(nn.Module):
 
     @torch.no_grad()
     def inpaint(self, x, mask, cond, genre, n_steps=101):
-
+        """
+        Inpainting for Flow Matching using ODE integration (reverse time: 1 -> 0)
+        x: (b, seq, dim) ground-truth sequence
+        mask: (b, seq, dim) 
+        """
         b, device = x.shape[0], x.device
         self.model.eval()
 
         e = torch.randn_like(x)
         x_t = e.clone()
 
-
+        #  (1 → 0)
         t_values = torch.linspace(1.0, 0, n_steps, device=device)
         for i in range(len(t_values) - 1):
             t_cur = t_values[i]
             t_next = t_values[i + 1]
 
+            # batch 
             t_batch = torch.full((b,), t_cur, device=device)
             h_batch = torch.full((b,), t_cur - t_next, device=device)  # interval
 
-
+            # 
             v_pred = self.model.infer_pred(x_t, cond, genre, t_batch, h_batch)
 
-
+            # Euler update
             dt = (t_next - t_cur).item()  
             x_t = x_t + v_pred * dt
+
 
             mask1 = mask * t_next
             # mask1 = mask
@@ -248,8 +257,9 @@ class FlowMatching(nn.Module):
 
         b, seq, dim = x.shape
         device = x.device
-        keep = 300  
+        keep = 300  # 
 
+        # ===  mask ===
         mask = torch.ones((b, seq, dim), device=device)
         if mode == "front":
             mask[:, keep:, :] = 0
@@ -260,18 +270,18 @@ class FlowMatching(nn.Module):
         else:
             raise ValueError(f"Unknown inpaint mode {mode}")
 
-
+        # ===  inpaint ===
         start = time.perf_counter()
         samples = self.inpaint(x, mask, cond, genre, n_steps=n_steps).detach().cpu()
         print(f"Inpaint mode={mode}, shape={samples.shape}")
         end = time.perf_counter()
         print(f"Inpaint Time: {(end - start):.2f} s")
 
-
+        # unnormalize 
         samples = normalizer.unnormalize(samples)
         sample_contact, samples = torch.split(samples, (4, samples.shape[2] - 4), dim=2)
 
-
+        # FK 
         b, s, c = samples.shape
         pos = samples[:, :, :3].to(cond.device)
         q = samples[:, :, 3:].reshape(b, s, 24, 6)

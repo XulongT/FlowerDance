@@ -287,7 +287,12 @@ class SMPLSkeleton:
                 self._children[parent].append(i)
 
     def forward(self, rotations, root_positions):
-
+        """
+        Perform forward kinematics using the given trajectory and local rotations.
+        Arguments (where N = batch size, L = sequence length, J = number of joints):
+         -- rotations: (N, L, J, 3) tensor of axis-angle rotations describing the local rotations of each joint.
+         -- root_positions: (N, L, 3) tensor describing the root joint positions.
+        """
         assert len(rotations.shape) == 4
         assert len(root_positions.shape) == 3
         # transform from axis angle to quaternion

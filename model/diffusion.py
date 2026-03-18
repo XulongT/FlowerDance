@@ -314,7 +314,9 @@ class GaussianDiffusion(nn.Module):
     def conditional_sample(
         self, shape, cond, constraint=None, *args, horizon=None, **kwargs
     ):
-
+        """
+            conditions : [ (time, state), ... ]
+        """
         device = self.betas.device
         horizon = horizon or self.horizon
 

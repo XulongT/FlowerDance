@@ -29,7 +29,9 @@ class MinMaxScaler:
         self.clip = clip
 
     def _reset(self):
-
+        """Reset internal data-dependent state of the scaler, if necessary.
+        __init__ parameters are not touched.
+        """
         # Checking one attribute is enough, because they are all set together
         # in partial_fit
         if hasattr(self, "scale_"):

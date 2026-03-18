@@ -1,11 +1,47 @@
+# BSD License
+
+# For fairmotion software
+
+# Copyright (c) Facebook, Inc. and its affiliates. All rights reserved.
+# Modified by Ruilong Li
+
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+
+#  * Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+
+#  * Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+
+#  * Neither the name Facebook nor the names of its contributors may be used to
+#    endorse or promote products derived from this software without specific
+#    prior written permission.
+
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import numpy as np
 from . import utils as feat_utils
 import torch
 
 def kinetic_features(joints, frame_time=1/60., up_vec="y", sliding_window=2):
-
+    """
+    joints: (b, t, j, 3)
+    output: (b, 72)
+    """
     b, t, j, _ = joints.shape
     joints = joints.numpy()
+
+
 
     def window_velocity(seq, window_size):
         """
@@ -13,7 +49,7 @@ def kinetic_features(joints, frame_time=1/60., up_vec="y", sliding_window=2):
         return: (t, j, 3)
         """
         v = np.zeros_like(seq)
-        for i in range(1, t):  
+        for i in range(1, t): 
             cur_v = []
             for k in range(-window_size, window_size+1):
                 if 0 <= i+k < t:
@@ -75,6 +111,18 @@ def kinetic_features(joints, frame_time=1/60., up_vec="y", sliding_window=2):
     kinetic_feats = np.concatenate(kinetic_feats, axis=-1)  # (b, 72)
     kinetic_feats = torch.from_numpy(kinetic_feats.astype(np.float32))
     return kinetic_feats[:, :66]
+
+
+
+# def kinetic_features(joints):
+#     # joints: b t j 3
+#     b, t, j, _ = joints.shape
+#     joints = joints.cpu().numpy()
+#     joints = joints - joints[:, :1, :1, :]
+#     kinetic_feats = np.zeros((b, 72))
+#     for i in range(b):
+#         kinetic_feats[i, :] = extract_kinetic_features(joints[i])
+#     return kinetic_feats[:, :66]
 
 def extract_kinetic_features(positions):
     assert len(positions.shape) == 3  # (seq_len, n_joints, 3)

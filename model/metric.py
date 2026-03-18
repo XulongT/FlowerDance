@@ -243,7 +243,10 @@ def calculate_pfc(joints):
     return out
 
 def rotate_pred_like_gt(local_q, root_pos):
-
+    """
+    local_q: (B, T, J, 3)  axis-angle
+    root_pos: (B, T, 3)
+    """
     local_q = local_q.float()
     root_pos = root_pos.float()
 
@@ -253,10 +256,10 @@ def rotate_pred_like_gt(local_q, root_pos):
 
 
     rotation = torch.tensor(
-        [0.7071068, -0.7071068, 0, 0],  
+        [0.7071068, -0.7071068, 0, 0],  # cos(-45)=0.707, sin(-45)=-0.707
         dtype=torch.float32,
         device=root_q_quat.device
-    ).unsqueeze(0) 
+    ).unsqueeze(0)  
     root_q_quat = quaternion_multiply(rotation, root_q_quat)
 
 
@@ -270,7 +273,9 @@ def rotate_pred_like_gt(local_q, root_pos):
     return local_q, root_pos
 
 def align_axis(keypoints: torch.Tensor) -> torch.Tensor:
-
+    """
+    keypoints: (B, T, J, 3)
+    """
     keypoints = keypoints.float()
     B, T, J, C = keypoints.shape
     rot = RotateAxisAngle(90, axis="z", degrees=True, device=keypoints.device)

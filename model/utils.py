@@ -10,11 +10,11 @@ class LearnablePositionalEncoding(nn.Module):
     def __init__(self, d_model=512, max_len=5000):
         super().__init__()
         self.pos_embedding = nn.Parameter(torch.zeros(1, max_len, d_model))
-        nn.init.trunc_normal_(self.pos_embedding, std=0.02)  # 初始化
+        nn.init.trunc_normal_(self.pos_embedding, std=0.02)  
 
     def forward(self, x):
         """
-        x: (B, T, C)  batch_first 格式
+        x: (B, T, C)  batch_first 
         """
         return x + self.pos_embedding[:, :x.size(1), :]
 

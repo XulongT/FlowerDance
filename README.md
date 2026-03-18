@@ -5,6 +5,7 @@ Code for paper
 
 [[Paper]](https://arxiv.org/abs/2511.21029) | [[Project Page]](https://flowerdance25.github.io/)
 
+✨ Training code release! ✨
 ---
 
 # Code
@@ -37,7 +38,7 @@ To set up the necessary environment for running this project, follow the steps b
 
 ## Download Resources
 
-- Download the **Preprocessed feature** from [Google Drive](https://drive.google.com/file/d/1rEArnH2h9vA1Vv3-qDrDGcBZ62aggF_e/view?usp=sharing) and place them into `./data/` folder.
+- Download the **Preprocessed feature** from [Google Drive](https://drive.google.com/file/d/1UfCsOYMRsJAsH1LOxrJg8X5o3MRAwM2s/view?usp=sharing) and place them into `./data/` folder.
 - Download the **Checkpoints for evaluation** and place them into the `./runs/` folder:  
   [Download Link](https://drive.google.com/file/d/1zZs_sXJToD5UzOA_m_DEoC0M79rEnEkg/view?usp=sharing)
 
@@ -65,9 +66,9 @@ FlowerDance/
 
 ## Training
 
-Training code and instructions will be released soon.  
-**Coming soon...**
-
+```bash
+accelerate launch train.py --batch_size 128  --epochs 4000 --feature_type baseline
+```
 ---
 
 ## Evaluation

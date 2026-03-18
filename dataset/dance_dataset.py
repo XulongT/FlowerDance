@@ -98,6 +98,15 @@ class AISTPPDataset(Dataset):
             self.data_path, "train" if self.train else "test"
         )
 
+        # Structure:
+        # data
+        #   |- train
+        #   |    |- motion_sliced
+        #   |    |- wav_sliced
+        #   |    |- baseline_features
+        #   |    |- jukebox_features
+        #   |    |- motions
+        #   |    |- wavs
 
         motion_path = os.path.join(split_data_path, "motions_sliced")
         sound_path = os.path.join(split_data_path, f"{self.feature_type}_feats")

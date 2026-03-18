@@ -86,7 +86,7 @@ class EDGE:
             horizon,
             repr_dim,
             smpl,
-            sigma=0.1,        # 保留噪声扰动
+            sigma=0.1,        
             loss_type="l2"
         )
 
@@ -108,6 +108,118 @@ class EDGE:
 
     def prepare(self, objects):
         return self.accelerator.prepare(*objects)
+
+    def train_loop(self, opt):
+        # load datasets
+        train_tensor_dataset_path = os.path.join(opt.processed_data_dir, f"train_tensor_dataset.pkl")
+        test_tensor_dataset_path = os.path.join(opt.processed_data_dir, f"test_tensor_dataset.pkl")
+        if (not opt.no_cache and os.path.isfile(train_tensor_dataset_path) and os.path.isfile(test_tensor_dataset_path)):
+            train_dataset = pickle.load(open(train_tensor_dataset_path, "rb"))
+            test_dataset = pickle.load(open(test_tensor_dataset_path, "rb"))
+        else:
+            train_dataset = AISTPPDataset(
+                data_path=opt.data_path,
+                backup_path=opt.processed_data_dir,
+                train=True,
+                force_reload=opt.force_reload,
+            )
+            test_dataset = AISTPPDataset(
+                data_path=opt.data_path,
+                backup_path=opt.processed_data_dir,
+                train=False,
+                normalizer=train_dataset.normalizer,
+                cond_normalizer=train_dataset.cond_normalizer,
+                force_reload=opt.force_reload,
+            )
+            # cache the dataset in case
+            if self.accelerator.is_main_process:
+                print(f"Saving train dataset to: {train_tensor_dataset_path}")
+                print(f"Saving test dataset to: {test_tensor_dataset_path}")
+                pickle.dump(train_dataset, open(train_tensor_dataset_path, "wb"))
+                pickle.dump(test_dataset, open(test_tensor_dataset_path, "wb"))
+
+        # set normalizer
+        self.normalizer = test_dataset.normalizer
+
+        # data loaders
+        # decide number of workers based on cpu count
+        num_cpus = multiprocessing.cpu_count()
+        train_data_loader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, \
+            num_workers=min(int(num_cpus * 0.75), 32), pin_memory=True, drop_last=True, worker_init_fn=self.worker_init_fn)
+        test_data_loader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, \
+            num_workers=2, pin_memory=True, drop_last=False, worker_init_fn=self.worker_init_fn)
+
+        train_data_loader = self.accelerator.prepare(train_data_loader)
+        # boot up multi-gpu training. test dataloader is only on main process
+        load_loop = (partial(tqdm, position=1, desc="Batch") if self.accelerator.is_main_process else lambda x: x)
+        if self.accelerator.is_main_process:
+            save_dir = str(increment_path(Path(opt.project) / opt.exp_name))
+            opt.exp_name = save_dir.split("/")[-1]
+            wandb.init(project=opt.wandb_pj_name, name=opt.exp_name)
+            save_dir = Path(save_dir)
+            wdir = save_dir / "weights"
+            wdir.mkdir(parents=True, exist_ok=True)
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        gt_dir = './data/test'
+        print('Build metric')
+        metric = Metric(gt_dir, device)
+        # metric = None
+
+        self.accelerator.wait_for_everyone()
+        for epoch in range(1, opt.epochs + 1):
+            avg_fm_loss, avg_rec_loss, avg_vloss, avg_fkloss, avg_footloss = 0, 0, 0, 0, 0
+            # train
+            self.train()
+            for step, (x, cond, filename, wavnames, genre) in tqdm(enumerate(load_loop(train_data_loader))):
+                total_loss, (fm_loss, loss, v_loss, fk_loss, foot_loss) = self.flow_matching(x, cond, genre, t_override=None)
+                self.optim.zero_grad()
+                self.accelerator.backward(total_loss)
+                self.optim.step()
+
+                # ema update and train loss update only on main
+                if self.accelerator.is_main_process:
+                    avg_rec_loss += loss.detach().cpu().numpy()
+                    avg_vloss += v_loss.detach().cpu().numpy()
+                    avg_fkloss += fk_loss.detach().cpu().numpy()
+                    avg_footloss += foot_loss.detach().cpu().numpy()
+                    avg_fm_loss += fm_loss.detach().cpu().numpy()
+                    if step % opt.ema_interval == 0:
+                        self.flow_matching.ema.update_model_average(self.flow_matching.master_model, self.flow_matching.model)
+                        
+            if self.accelerator.is_main_process:
+                avg_rec_loss /= len(train_data_loader)
+                avg_vloss /= len(train_data_loader)
+                avg_fkloss /= len(train_data_loader)
+                avg_footloss /= len(train_data_loader)
+                avg_fm_loss /= len(train_data_loader)
+                log_dict = {"FM Loss": avg_fm_loss, "Rec Loss": avg_rec_loss, "V Loss": avg_vloss, "FK Loss": avg_fkloss, "Foot Loss": avg_footloss}
+                print(log_dict)
+
+            # Save model
+            # if (epoch % opt.save_interval) == 0 and epoch >= 500:
+            if (epoch % opt.save_interval) == 0:
+                # everyone waits here for the val loop to finish ( don't start next train epoch early)
+                self.accelerator.wait_for_everyone()
+                # save only if on main thread
+                if self.accelerator.is_main_process:
+                    self.eval()
+                    wandb.log(log_dict)
+                    ckpt = {"model_state_dict": self.accelerator.unwrap_model(self.model).state_dict(), "normalizer": self.normalizer, }
+                    torch.save(ckpt, os.path.join(wdir, f"train-{epoch}.pt"))
+                    print(f"[MODEL SAVED at Epoch {epoch}]")
+
+                    print("Generating Sample")
+                    # draw a music from the test dataset
+                    (x, cond, filename, wavnames, genre) = next(iter(test_data_loader))
+                    cond, genre = cond.to(self.accelerator.device), genre.to(self.accelerator.device)
+                    print(cond.shape, x.shape)
+                    self.flow_matching.render_sample(x.shape, cond, genre, self.normalizer, epoch, os.path.join(opt.render_dir, "train_" + opt.exp_name), os.path.join(opt.eval_dir, "train_" + opt.exp_name), name=wavnames, sound=True,)
+                    metric.calculate_metric(os.path.join(opt.eval_dir, "train_" + opt.exp_name, str(epoch)), device)
+
+                    
+        if self.accelerator.is_main_process:
+            wandb.run.finish()
 
     def test_loop(self, opt):
         # load datasets
@@ -139,6 +251,7 @@ class EDGE:
         gt_dir = './data/test'
         print('Build metric')
         metric = Metric(gt_dir, device)
+        # metric = None
 
         self.eval()
         print("Generating Sample")
@@ -187,3 +300,10 @@ class EDGE:
         numpy.random.seed(seed)
         random.seed(seed)
         torch.manual_seed(seed)
+
+    def render_sample(self, cond, genre, device, output_dir, file_name):
+        cond = rearrange(torch.from_numpy(cond).to(device), 't c -> 1 t c')
+        genre = torch.tensor([genre]).to(device)
+        file_name = [os.path.join(output_dir, file_name.replace('.pkl', '.npy'))]
+        b, t, c = cond.shape
+        self.flow_matching.render_sample((b, t, 151), cond, genre, self.normalizer, 0, None, output_dir, file_name)
