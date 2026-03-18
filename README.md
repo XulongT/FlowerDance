@@ -67,6 +67,7 @@ FlowerDance/
 ## Training
 
 ```bash
+export WANDB_MODE=offline
 accelerate launch train.py --batch_size 128  --epochs 4000 --feature_type baseline
 ```
 ---
