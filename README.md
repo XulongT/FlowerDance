@@ -1,10 +1,21 @@
-# FlowerDance: MeanFlow for Efficient and Refined 3D Dance Generation
+<h1 align="center">🌸 FlowerDance</h1>
+<h3 align="center">MeanFlow for Efficient and Refined 3D Dance Generation</h3>
 
-[![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2511.21029)
-[![Project Page](https://img.shields.io/badge/Project-Page-2ea44f?logo=githubpages&logoColor=white)](https://sun-happy-ykx.github.io/FlowerDance/)
-[![Training Code](https://img.shields.io/badge/Training-Code-4169e1?logo=github&logoColor=white)](#code)
+<p align="center">
+  <a href="https://arxiv.org/abs/2511.21029">
+    <img src="https://img.shields.io/badge/Paper-arXiv-b31b1b?logo=arxiv&logoColor=white" alt="Paper">
+  </a>
+  <a href="https://sun-happy-ykx.github.io/FlowerDance/">
+    <img src="https://img.shields.io/badge/Project-Page-2ea44f?logo=githubpages&logoColor=white" alt="Project Page">
+  </a>
+  <a href="#code">
+    <img src="https://img.shields.io/badge/Training-Code-4169e1?logo=github&logoColor=white" alt="Training Code">
+  </a>
+</p>
 
-![FlowerDance teaser](./flowerteaser.png)
+<p align="center">
+  <img src="./flowerteaser.png" width="90%" alt="FlowerDance teaser">
+</p>
 
 > **Abstract**: Music-to-dance generation translates auditory signals into expressive human motion, yet existing approaches still struggle to balance refined 3D motion quality with strict inference budgets. FlowerDance is designed for both physically plausible, artistically expressive motion and efficient generation in speed and memory usage.
 >
@@ -14,9 +25,11 @@
 
 ---
 
-# Code
+<a id="code"></a>
 
-## Set up the Environment
+## 🚀 Code
+
+### 🛠️ Set up the Environment
 
 To set up the necessary environment for running this project, follow the steps below:
 
@@ -42,7 +55,7 @@ To set up the necessary environment for running this project, follow the steps b
 
 ---
 
-## Download Resources
+## 📦 Download Resources
 
 - Download the **Preprocessed feature** from [Google Drive](https://drive.google.com/file/d/1UfCsOYMRsJAsH1LOxrJg8X5o3MRAwM2s/view?usp=sharing) and place them into `./data/` folder.
 - Download the **Checkpoints for evaluation** and place them into the `./runs/` folder:  
@@ -50,7 +63,7 @@ To set up the necessary environment for running this project, follow the steps b
 
 ---
 
-## Directory Structure
+## 🧩 Directory Structure
 
 After downloading the necessary files, ensure the directory structure follows the pattern below:
 
@@ -70,7 +83,7 @@ FlowerDance/
 ```
 ---
 
-## Training
+## 🏋️ Training
 
 ```bash
 export WANDB_MODE=offline
@@ -78,9 +91,9 @@ accelerate launch train.py --batch_size 128  --epochs 4000 --feature_type baseli
 ```
 ---
 
-## Evaluation
+## 📏 Evaluation
 
-### Evaluate the Model
+### 🧪 Evaluate the Model
 
 To evaluate the our model’s performance:
 
@@ -91,7 +104,7 @@ python test.py --batch_size 128
 
 ---
 
-# Citation
+## 📄 Citation
 
 ```bibtex
 @article{yang2025flowerdance,
