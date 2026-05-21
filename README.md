@@ -1,11 +1,17 @@
-# FlowerDance
+# FlowerDance: MeanFlow for Efficient and Refined 3D Dance Generation
 
-Code for paper  
-**"FlowerDance: MeanFlow for Efficient and Refined 3D Dance Generation"**
+[![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2511.21029)
+[![Project Page](https://img.shields.io/badge/Project-Page-2ea44f?logo=githubpages&logoColor=white)](https://sun-happy-ykx.github.io/FlowerDance/)
+[![Training Code](https://img.shields.io/badge/Training-Code-4169e1?logo=github&logoColor=white)](#code)
 
-[[Paper]](https://arxiv.org/abs/2511.21029) | [[Project Page]](https://flowerdance25.github.io/)
+![FlowerDance teaser](./flowerteaser.png)
+
+> **Abstract**: Music-to-dance generation translates auditory signals into expressive human motion, yet existing approaches still struggle to balance refined 3D motion quality with strict inference budgets. FlowerDance is designed for both physically plausible, artistically expressive motion and efficient generation in speed and memory usage.
+>
+> FlowerDance combines MeanFlow with Physical Consistency Constraints for high-quality few-step sampling, and uses a lightweight non-autoregressive BiMamba backbone with Channel-Level Fusion for long-horizon music-to-dance synthesis. It also supports motion editing through time-decayed soft masking, enabling users to refine generated dance sequences interactively.
 
 ✨ Training code release! ✨
+
 ---
 
 # Code
