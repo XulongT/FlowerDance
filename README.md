@@ -3,13 +3,13 @@
 
 <p align="center">
   <a href="https://arxiv.org/abs/2511.21029">
-    <img src="https://img.shields.io/badge/Paper-arXiv-b31b1b?logo=arxiv&logoColor=white" alt="Paper">
+    <img src="https://img.shields.io/badge/arXiv-FlowerDance-green" alt="Paper">
   </a>
   <a href="https://sun-happy-ykx.github.io/FlowerDance/">
-    <img src="https://img.shields.io/badge/Project-Page-2ea44f?logo=githubpages&logoColor=white" alt="Project Page">
+    <img src="https://img.shields.io/badge/Project_Page-FlowerDance-blue" alt="Project Page">
   </a>
   <a href="#code">
-    <img src="https://img.shields.io/badge/Training-Code-4169e1?logo=github&logoColor=white" alt="Training Code">
+    <img src="https://img.shields.io/badge/Conference-ECCV%202026-orange" alt="Conference">
   </a>
 </p>
 
