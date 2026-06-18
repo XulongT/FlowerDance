@@ -21,6 +21,7 @@
 >
 > FlowerDance combines MeanFlow with Physical Consistency Constraints for high-quality few-step sampling, and uses a lightweight non-autoregressive BiMamba backbone with Channel-Level Fusion for long-horizon music-to-dance synthesis. It also supports motion editing through time-decayed soft masking, enabling users to refine generated dance sequences interactively.
 
+🎉 **FlowerDance has been accepted to ECCV 2026!**
 ✨ Training code release! ✨
 
 ---
