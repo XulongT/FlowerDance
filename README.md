@@ -58,9 +58,8 @@ To set up the necessary environment for running this project, follow the steps b
 
 ## 📦 Download Resources
 
-- Download the **Preprocessed feature** from [Google Drive](https://drive.google.com/file/d/1UfCsOYMRsJAsH1LOxrJg8X5o3MRAwM2s/view?usp=sharing) and place them into `./data/` folder.
-- Download the **Checkpoints for evaluation** and place them into the `./runs/` folder:  
-  [Download Link](https://drive.google.com/file/d/1zZs_sXJToD5UzOA_m_DEoC0M79rEnEkg/view?usp=sharing)
+- Download the complete **preprocessed data archive** from [Hugging Face](https://huggingface.co/datasets/xlt99/FlowerDance-Preprocessed/resolve/main/data.7z?download=true) and extract it in the project root. The archive contains the required `./data/` directory.
+- Download the **evaluation checkpoint** from [Hugging Face](https://huggingface.co/xlt99/FlowerDance/resolve/main/train-3700.pt?download=true) and place it at `./runs/train/uniform2/weights/train-3700.pt`.
 
 ---
 
@@ -102,6 +101,12 @@ To evaluate the our model’s performance:
 python test.py --batch_size 128
 ```
 
+
+---
+
+## 🙏 Acknowledgements
+
+This code is standing on the shoulders of giants. We want to thank the following contributors that our code is based on: [EDGE](https://github.com/Stanford-TML/EDGE), [Adan-pytorch](https://github.com/lucidrains/Adan-pytorch), [denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch), [Mamba](https://github.com/state-spaces/mamba), [causal-conv1d](https://github.com/Dao-AILab/causal-conv1d), and [fairmotion](https://github.com/facebookresearch/fairmotion). The preprocessed data builds on [AIST++](https://github.com/google/aistplusplus_api) and [FineDance](https://github.com/li-ronghui/FineDance).
 
 ---
 
