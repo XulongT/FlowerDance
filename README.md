@@ -11,6 +11,9 @@
   <a href="#code">
     <img src="https://img.shields.io/badge/Conference-ECCV%202026-orange" alt="Conference">
   </a>
+  <a href="#inference">
+    <img src="https://img.shields.io/badge/Inference-Custom_Music-8a2be2" alt="Inference">
+  </a>
 </p>
 
 <p align="center">
@@ -22,7 +25,7 @@
 > FlowerDance combines MeanFlow with Physical Consistency Constraints for high-quality few-step sampling, and uses a lightweight non-autoregressive BiMamba backbone with Channel-Level Fusion for long-horizon music-to-dance synthesis. It also supports motion editing through time-decayed soft masking, enabling users to refine generated dance sequences interactively.
 
 🎉 **FlowerDance has been accepted to ECCV 2026!**
-✨ Training code release! ✨
+✨ Training and inference code released! ✨
 
 ---
 
@@ -61,6 +64,8 @@ To set up the necessary environment for running this project, follow the steps b
 - Download the complete **preprocessed data archive** from [Hugging Face](https://huggingface.co/datasets/xlt99/FlowerDance-Preprocessed/resolve/main/data.7z?download=true) and extract it in the project root. The archive contains the required `./data/` directory.
 - Download the **evaluation checkpoint** from [Hugging Face](https://huggingface.co/xlt99/FlowerDance/resolve/main/train-3700.pt?download=true) and place it at `./runs/train/uniform2/weights/train-3700.pt`.
 
+The preprocessed data archive is only required for training and evaluation. The custom-music inference script can download the checkpoint automatically and does not require the dataset archive.
+
 ---
 
 ## 🧩 Directory Structure
@@ -77,6 +82,7 @@ FlowerDance/
     ├── requirements.txt
     ├── args.py  
     ├── EDGE.py
+    ├── inference.py
     ├── inpaint.py
     ├── test.py
     └── vis.py     
@@ -89,6 +95,50 @@ FlowerDance/
 export WANDB_MODE=offline
 accelerate launch train.py --batch_size 128  --epochs 4000 --feature_type baseline
 ```
+---
+
+<a id="inference"></a>
+
+## 🎵 Inference
+
+Generate a 3D dance sequence directly from your own music:
+
+```bash
+python inference.py path/to/music.wav \
+    --genre Hiphop \
+    --duration 32 \
+    --output-dir inference_outputs
+```
+
+The input can be a WAV, MP3, FLAC, or OGG file. The script extracts the same 35-dimensional baseline music features used during training, supports genre-conditioned generation, and automatically downloads `train-3700.pt` from [Hugging Face](https://huggingface.co/xlt99/FlowerDance) when `--checkpoint` is omitted.
+
+List all 16 supported dance genres:
+
+```bash
+python inference.py --list-genres
+```
+
+Generate a 60-second sequence from a selected part of a longer track:
+
+```bash
+python inference.py path/to/music.mp3 \
+    --genre Popping \
+    --start 10 \
+    --duration 60
+```
+
+The default duration is 32 seconds and the maximum supported duration is 60 seconds. A CUDA GPU is required. Each run saves:
+
+```text
+inference_outputs/
+├── music_Hiphop.wav
+├── music_Hiphop_features.npy
+└── 0/
+    └── music_Hiphop.pkl
+```
+
+The PKL file contains `smpl_poses`, `smpl_trans`, and `full_pose` for downstream visualization or rendering.
+
 ---
 
 ## 📏 Evaluation
