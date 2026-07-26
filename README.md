@@ -8,7 +8,7 @@
   <a href="https://sun-happy-ykx.github.io/FlowerDance/">
     <img src="https://img.shields.io/badge/Project_Page-FlowerDance-blue" alt="Project Page">
   </a>
-  <a href="#code">
+  <a href="https://github.com/XulongT/FlowerDance">
     <img src="https://img.shields.io/badge/Conference-ECCV%202026-orange" alt="Conference">
   </a>
   <a href="https://huggingface.co/xlt99/FlowerDance">
@@ -63,10 +63,8 @@ To set up the necessary environment for running this project, follow the steps b
 
 ## 📦 Download Resources
 
-- Download the complete **preprocessed data archive** from [Hugging Face](https://huggingface.co/datasets/xlt99/FlowerDance-Preprocessed/resolve/main/data.7z?download=true) and extract it in the project root. The archive contains the required `./data/` directory.
-- Download the **evaluation checkpoint** from [Hugging Face](https://huggingface.co/xlt99/FlowerDance/resolve/main/train-3700.pt?download=true) and place it at `./runs/train/uniform2/weights/train-3700.pt`.
-
-The preprocessed data archive is only required for training and evaluation. The custom-music inference script can download the checkpoint automatically and does not require the dataset archive.
+- Download the **preprocessed features archive** from [Google Drive](https://drive.google.com/file/d/1UfCsOYMRsJAsH1LOxrJg8X5o3MRAwM2s/view?usp=sharing) and extract it so that the preprocessed files are located under `./data/`.
+- Download the **evaluation checkpoint archive** from [Google Drive](https://drive.google.com/file/d/1zZs_sXJToD5UzOA_m_DEoC0M79rEnEkg/view?usp=sharing) and extract it in the project root. The archive creates the required `./runs/` directory.
 
 ---
 
@@ -84,9 +82,10 @@ FlowerDance/
     ├── requirements.txt
     ├── args.py  
     ├── EDGE.py
+    ├── train.py
+    ├── test.py
     ├── inference.py
     ├── inpaint.py
-    ├── test.py
     └── vis.py     
 ```
 ---
@@ -95,7 +94,7 @@ FlowerDance/
 
 ```bash
 export WANDB_MODE=offline
-accelerate launch train.py --batch_size 128  --epochs 4000 --feature_type baseline
+accelerate launch train.py --batch_size 128 --epochs 4000 --feature_type baseline
 ```
 ---
 
@@ -103,7 +102,7 @@ accelerate launch train.py --batch_size 128  --epochs 4000 --feature_type baseli
 
 ### 🧪 Evaluate the Model
 
-To evaluate the our model’s performance:
+To evaluate the model:
 
 ```bash
 python test.py --batch_size 128

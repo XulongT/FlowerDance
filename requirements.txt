@@ -1,3 +1,4 @@
+accelerate==1.8.1
 audioread==3.0.1
 -e git+https://github.com/Dao-AILab/causal-conv1d.git@857842b10546d86aaf05c52570a51fba2eec04d2#egg=causal_conv1d
 certifi==2025.10.5
@@ -50,8 +51,10 @@ packaging==25.0
 pillow==11.0.0
 platformdirs==4.5.0
 pooch==1.8.2
+p-tqdm==1.4.2
 pycparser==2.23
 pyparsing==3.2.5
+-e git+https://github.com/facebookresearch/pytorch3d.git@75ebeeaea0908c5527e7b1e305fbc7681382db47#egg=pytorch3d
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 regex==2025.9.18
@@ -75,3 +78,4 @@ triton==3.3.1
 typing_extensions==4.12.2
 urllib3==2.5.0
 vector-quantize-pytorch==1.23.2
+wandb==0.19.11
