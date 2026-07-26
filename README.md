@@ -11,8 +11,8 @@
   <a href="#code">
     <img src="https://img.shields.io/badge/Conference-ECCV%202026-orange" alt="Conference">
   </a>
-  <a href="#inference">
-    <img src="https://img.shields.io/badge/Inference-Custom_Music-8a2be2" alt="Inference">
+  <a href="https://huggingface.co/xlt99/FlowerDance">
+    <img src="https://img.shields.io/badge/Hugging_Face-%F0%9F%A4%97_Model-FFD21E" alt="Hugging Face">
   </a>
 </p>
 
@@ -24,8 +24,10 @@
 >
 > FlowerDance combines MeanFlow with Physical Consistency Constraints for high-quality few-step sampling, and uses a lightweight non-autoregressive BiMamba backbone with Channel-Level Fusion for long-horizon music-to-dance synthesis. It also supports motion editing through time-decayed soft masking, enabling users to refine generated dance sequences interactively.
 
-🎉 **FlowerDance has been accepted to ECCV 2026!**
-✨ Training and inference code released! ✨
+<p align="center">
+  <strong>🎉 FlowerDance has been accepted to ECCV 2026! 🎉</strong><br>
+  <em>✨ Training and inference code are now available. ✨</em>
+</p>
 
 ---
 
@@ -97,50 +99,6 @@ accelerate launch train.py --batch_size 128  --epochs 4000 --feature_type baseli
 ```
 ---
 
-<a id="inference"></a>
-
-## 🎵 Inference
-
-Generate a 3D dance sequence directly from your own music:
-
-```bash
-python inference.py path/to/music.wav \
-    --genre Hiphop \
-    --duration 32 \
-    --output-dir inference_outputs
-```
-
-The input can be a WAV, MP3, FLAC, or OGG file. The script extracts the same 35-dimensional baseline music features used during training, supports genre-conditioned generation, and automatically downloads `train-3700.pt` from [Hugging Face](https://huggingface.co/xlt99/FlowerDance) when `--checkpoint` is omitted.
-
-List all 16 supported dance genres:
-
-```bash
-python inference.py --list-genres
-```
-
-Generate a 60-second sequence from a selected part of a longer track:
-
-```bash
-python inference.py path/to/music.mp3 \
-    --genre Popping \
-    --start 10 \
-    --duration 60
-```
-
-The default duration is 32 seconds and the maximum supported duration is 60 seconds. A CUDA GPU is required. Each run saves:
-
-```text
-inference_outputs/
-├── music_Hiphop.wav
-├── music_Hiphop_features.npy
-└── 0/
-    └── music_Hiphop.pkl
-```
-
-The PKL file contains `smpl_poses`, `smpl_trans`, and `full_pose` for downstream visualization or rendering.
-
----
-
 ## 📏 Evaluation
 
 ### 🧪 Evaluate the Model
@@ -151,6 +109,27 @@ To evaluate the our model’s performance:
 python test.py --batch_size 128
 ```
 
+---
+
+<a id="inference"></a>
+
+## 🎵 Inference
+
+Generate a genre-conditioned dance sequence of a custom length from your own music:
+
+```bash
+python inference.py path/to/music.wav \
+    --genre Hiphop \
+    --duration 32
+```
+
+List all supported dance genres:
+
+```bash
+python inference.py --list-genres
+```
+
+The checkpoint is downloaded automatically from [Hugging Face](https://huggingface.co/xlt99/FlowerDance) when `--checkpoint` is omitted. Generated motions are saved to `inference_outputs/`.
 
 ---
 

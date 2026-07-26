@@ -18,7 +18,6 @@ SAMPLE_RATE = FPS * HOP_LENGTH
 FEATURE_DIM = 35
 MOTION_DIM = 151
 DEFAULT_DURATION = 32.0
-MAX_DURATION = 60.0
 
 GENRES = (
     "Dai",
@@ -426,8 +425,8 @@ def main():
     music_path = args.music.expanduser().resolve()
     if not music_path.is_file():
         parser.error(f"Music file not found: {music_path}")
-    if not 0 < args.duration <= MAX_DURATION:
-        parser.error(f"--duration must be in (0, {MAX_DURATION:g}] seconds")
+    if args.duration <= 0:
+        parser.error("--duration must be positive")
     if args.steps < 2:
         parser.error("--steps must be at least 2")
 
