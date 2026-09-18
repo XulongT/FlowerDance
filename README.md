@@ -63,8 +63,8 @@ To set up the necessary environment for running this project, follow the steps b
 
 ## 📦 Download Resources
 
-- Download the **preprocessed features archive** from [Google Drive](https://drive.google.com/file/d/1UfCsOYMRsJAsH1LOxrJg8X5o3MRAwM2s/view?usp=sharing) and extract it so that the preprocessed files are located under `./data/`.
-- Download the **evaluation checkpoint archive** from [Google Drive](https://drive.google.com/file/d/1zZs_sXJToD5UzOA_m_DEoC0M79rEnEkg/view?usp=sharing) and extract it in the project root. The archive creates the required `./runs/` directory.
+- Download the **preprocessed features archive** from [Google Drive](https://drive.google.com/file/d/1506WjfwegXhT5DM9e4bXSoBgq7uvUPpA/view?usp=sharing) and extract it so that the preprocessed files are located under `./data/`.
+- Download the **evaluation checkpoint archive** from [Google Drive](https://drive.google.com/file/d/19Wxo3Zgq8dF3BLwncNEEtsq0O9nbcL6D/view?usp=sharing) and extract it in the project root. The archive creates the required `./runs/` directory.
 
 ---
 
