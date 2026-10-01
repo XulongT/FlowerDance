@@ -2,8 +2,8 @@
 <h3 align="center">MeanFlow for Efficient and Refined 3D Dance Generation</h3>
 
 <p align="center">
-  <a href="https://arxiv.org/abs/2511.21029">
-    <img src="https://img.shields.io/badge/arXiv-FlowerDance-green" alt="Paper">
+  <a href="https://link.springer.com/chapter/10.1007/978-3-032-37258-1_4">
+    <img src="https://img.shields.io/badge/Paper-FlowerDance-green" alt="Paper">
   </a>
   <a href="https://sun-happy-ykx.github.io/FlowerDance/">
     <img src="https://img.shields.io/badge/Project_Page-FlowerDance-blue" alt="Project Page">
