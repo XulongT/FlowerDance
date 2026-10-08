@@ -141,10 +141,12 @@ This code is standing on the shoulders of giants. We want to thank the following
 ## 📄 Citation
 
 ```bibtex
-@article{yang2025flowerdance,
-  title={FlowerDance: MeanFlow for Efficient and Refined 3D Dance Generation},
-  author={Kaixing Yang and Xulong Tang and Ziqiao Peng and Xiangyue Zhang and Puwei Wang and Jun He and Hongyan Liu},
-  journal={arXiv preprint arXiv:2511.21029},
-  year={2025}
+@inproceedings{yang2026flowerdance,
+  title={Flowerdance: Meanflow for efficient and refined 3d dance generation},
+  author={Yang, Kaixing and Tang, Xulong and Peng, Ziqiao and Zhang, Xiangyue and Chen, Chubin and Zhou, Xukun and Wang, Puwei and Liu, Hongyan and He, Jun},
+  booktitle={European Conference on Computer Vision},
+  pages={56--74},
+  year={2026},
+  organization={Springer}
 }
 ```
